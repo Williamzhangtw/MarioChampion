@@ -396,7 +396,7 @@ function buildLevel5() {
   return {
     tileMap, entities, mario,
     background: '#1a0a2e',
-    name: 'Level 5 – Champion\'s Trial',
+    name: "Level 5 – Champion's Trial",
     testFocus: 'Full controller – every mechanic combined',
     tip: 'This is the ultimate test! Use every skill: run, precise jumps, moving platforms, and stomp that boss cluster!',
   };
