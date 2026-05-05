@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mario Champion – Controller Test Game</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ── Header ──────────────────────────────────────────────────────────── -->
+  <div id="header">
+    <h1>🎮 Mario Champion</h1>
+    <div id="gamepad-status">❌ No controller – use keyboard (↑↓←→ / Z / X)</div>
+  </div>
+
+  <!-- ── Level selector (works even mid-game) ───────────────────────────── -->
+  <div id="level-select-bar">
+    <label for="lvl-sel">Jump to level:</label>
+    <select id="lvl-sel">
+      <option value="0">Level 1 – Button Awakening</option>
+      <option value="1">Level 2 – Rapid Rhythm</option>
+      <option value="2">Level 3 – Analog Artist</option>
+      <option value="3">Level 4 – Trigger Master</option>
+      <option value="4">Level 5 – Champion's Trial</option>
+    </select>
+    <button id="lvl-go">Load Level</button>
+  </div>
+
+  <!-- ── Game canvas ─────────────────────────────────────────────────────── -->
+  <div id="game-container">
+    <canvas id="gameCanvas" width="800" height="448"></canvas>
+  </div>
+
+  <!-- ── Controller display panel ────────────────────────────────────────── -->
+  <div id="controller-panel">
+
+    <div class="panel-section">
+      <h3>🕹 Buttons</h3>
+      <div id="btn-panel">
+        <span style="color:#555;font-size:0.7rem">Connect a gamepad or press a key to see button state</span>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <h3>📡 Sticks &amp; Triggers</h3>
+      <div id="stick-panel">
+        <span style="color:#555;font-size:0.7rem">Connect a gamepad to see stick positions</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Keyboard hints ─────────────────────────────────────────────────── -->
+  <div id="keyboard-hints">
+    Keyboard: <strong>← →</strong> move &nbsp;|&nbsp;
+    <strong>Z / Space</strong> jump &nbsp;|&nbsp;
+    <strong>X / Shift</strong> run &nbsp;|&nbsp;
+    <strong>Enter</strong> pause
+  </div>
+
+</div><!-- #app -->
+
+<!-- ── Scripts (load order matters) ──────────────────────────────────────── -->
+<script src="src/constants.js"></script>
+<script src="src/input.js"></script>
+<script src="src/physics.js"></script>
+<script src="src/tilemap.js"></script>
+<script src="src/entities.js"></script>
+<script src="src/levels.js"></script>
+<script src="src/renderer.js"></script>
+<script src="src/game.js"></script>
+
+<script>
+  // ── Bootstrap ─────────────────────────────────────────────────────────────
+  const canvas = document.getElementById('gameCanvas');
+  const game   = new Game(canvas);
+  game.start();
+
+  // ── Level select button ───────────────────────────────────────────────────
+  document.getElementById('lvl-go').addEventListener('click', () => {
+    const idx = parseInt(document.getElementById('lvl-sel').value, 10);
+    game.levelIndex = idx;
+    game._savedMarioStats = null;  // fresh stats for manual level jump
+    game._loadLevel(idx);
+    game.state = STATE.PLAYING;
+  });
+
+  // ── Auto-start support (?autostart=1 or ?level=N in URL) ─────────────────
+  const params = new URLSearchParams(location.search);
+  if (params.has('autostart') || params.has('level')) {
+    const lvl = parseInt(params.get('level') || '0', 10);
+    game.levelIndex = isNaN(lvl) ? 0 : Math.max(0, Math.min(lvl, 4));
+    game._loadLevel(game.levelIndex);
+    game.state = STATE.PLAYING;
+  }
+</script>
+</body>
+</html>
